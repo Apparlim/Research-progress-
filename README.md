@@ -46,3 +46,21 @@ flowchart TD
 - **File Writes (`~/.codex`)**: Grepped `codex-rs` to map all persistent stores, identifying whether each is written mechanically by the harness or by the user, auto-loaded on startup, and how it is deleted[cite: 6, 7].
 - **Compaction Prompt**: Located `SUMMARIZATION_PROMPT` and `SUMMARY_PREFIX` in the source code. When context limits are reached, the harness prompts the model to summarize prior messages and replaces older turns with the compacted summary.
 - **AGENTS.md Merging**: Inspected `codex-rs/core/src/agents_md.rs`. The harness discovers global instructions (`~/.codex/AGENTS.md`) and project-level instructions (`<project>/AGENTS.md`), merging them hierarchically into the initial context[cite: 6, 7].
+
+## PowerShell Verification & Source Inspection
+
+```powershell
+# 1. Search source code for ~/.codex paths and persistence stores
+Select-String -Path "codex-rs\**\*.rs" -Pattern "\.codex|config\.toml|auth\.json|sqlite|AGENTS\.md"
+
+# 2. Locate the conversation compaction prompt
+Select-String -Path "codex-rs\**\*.rs" -Pattern "SUMMARIZATION_PROMPT|SUMMARY_PREFIX"
+
+# 3. Inspect AGENTS.md discovery and hierarchical merging
+Get-Content "codex-rs\core\src\agents_md.rs"
+
+# 4. Verify local runtime directory structure (API key masked in .env)
+# GEMINI_API_KEY="........."
+codex exec "list the files in this repo"
+Get-ChildItem -Path "$HOME\.codex" -Force
+```
